@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Local User Configurations & Personal Data
+rpc-config.json
+afk-logs.json
+bot-config.json
+quest-process.json
+accounts/
+public/uploads/
+
+# Logs & Debug Output
+*.log
+
+# System & OS Files
+.DS_Store
+Thumbs.db
+
+# Build scripts
+build-protected.js

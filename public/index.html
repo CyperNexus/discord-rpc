@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OutverVerse Panel - Free Edition</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+  <div id="custom-bg-overlay"></div>
+
+  
+  <canvas id="bg-canvas"></canvas>
+
+  <div class="app-wrapper">
+
+    
+    <header class="header-bar">
+      <div class="brand-title">
+        <span class="brand-tag">SYS // V3.0</span>
+        <div class="brand-text">
+          <h1>OuterVerse Panel - Free Edition</h1>
+          <p>Discord Selfbot & Activity Control System</p>
+        </div>
+      </div>
+
+      
+      <div class="account-selector-bar" id="account-tabs-container">
+        
+      </div>
+    </header>
+
+    <div class="main-content-area" id="main-content-area">
+      
+      <div id="account-lock-overlay" style="display: none;">
+        <div class="lock-panel">
+          <div class="lock-icon">🔒</div>
+          <h2>CẤU HÌNH ĐÃ KHÓA</h2>
+          <p>Nhập mật khẩu để mở khóa và chỉnh sửa cấu hình tài khoản này.</p>
+          <div class="lock-form">
+            <input type="password" id="lock-password-input" class="form-input" placeholder="Nhập mật khẩu..." onkeydown="if(event.key === 'Enter') unlockActiveAccount()">
+            <button onclick="unlockActiveAccount()" class="btn-primary" style="width: 100%;">MỞ KHÓA TÀI KHOẢN</button>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="token-bar">
+        <span class="token-label">DISCORD USER TOKEN:</span>
+        <input type="password" id="acc-token-input" placeholder="Dán User Token Discord tại đây..." class="form-input" style="flex: 1; min-width: 280px; font-family: var(--font-mono); font-size: 12px;">
+        <button onclick="saveToken()" class="btn-primary">LƯU TOKEN & KẾT NỐI</button>
+      </div>
+
+    
+    <nav class="sub-nav">
+      <button class="nav-item active" data-tab="rpc">RICH PRESENCE</button>
+      <button class="nav-item" data-tab="status">DYNAMIC STATUS</button>
+      <button class="nav-item" data-tab="afk">AFK RESPONDER</button>
+      <button class="nav-item" data-tab="voice">VOICE HOLDER</button>
+      <button class="nav-item" data-tab="hypesquad">HYPESQUAD BADGE</button>
+      
+      <button class="nav-item" data-tab="theme">THEME & BACKGROUND</button>
+    </nav>
+
+    
+    <div class="workspace-grid">
+
+      
+      <div class="workspace-main">
+
+        
+        <div class="tab-content" id="tab-rpc">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">RICH PRESENCE (RPC) CONFIGURATION</div>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <label class="switch">
+                  <input type="checkbox" id="rpc-enabled" checked onchange="updateDiscordPreview()">
+                  <span class="slider"></span>
+                </label>
+                <span class="form-label" style="margin: 0; color: var(--accent-signal); font-weight: 700;">KÍCH HOẠT RPC</span>
+              </div>
+            </div>
+
+            
+            <div class="form-row" style="margin-bottom: 16px; background: rgba(255,255,255,0.02); padding: 12px; border: 1px solid var(--border-color);">
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label">CHẾ ĐỘ PRESENCE (RPC MODE):</label>
+                <select id="rpc-mode-select" class="form-select" onchange="updateDiscordPreview()">
+                  <option value="sequential">SEQUENTIAL (Lần lượt từ trên xuống)</option>
+                  <option value="random">RANDOM (Ngẫu nhiên)</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label">TRẠNG THÁI ONLINE DISCORD:</label>
+                <select id="rpc-status" class="form-select" onchange="updateDiscordPreview()">
+                  <option value="online">ONLINE (Trực tuyến)</option>
+                  <option value="idle">IDLE (Chờ)</option>
+                  <option value="dnd">DND (Không làm phiền)</option>
+                  <option value="invisible">INVISIBLE (Ẩn thân)</option>
+                </select>
+              </div>
+            </div>
+
+            
+            <div id="rotation-rpc-container">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="form-label" style="margin: 0; font-weight: 600;">DANH SÁCH PROFILES BÀI HÁT / GAME (Nếu chỉ có 1 profile sẽ hiện tĩnh, nhiều hơn 1 sẽ tự động xoay):</span>
+                <button onclick="addRpcProfile()" class="btn-secondary" style="padding: 6px 12px; font-size: 11px;">+ THÊM PROFILE RPC</button>
+              </div>
+
+              <div id="rpc-profiles-list">
+                
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+              <button onclick="saveRPC()" class="btn-primary">CẬP NHẬT CẤU HÌNH RPC</button>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="tab-content" id="tab-status" style="display: none;">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">DYNAMIC STATUS ROTATION</div>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <label class="switch">
+                  <input type="checkbox" id="dyn-status-enabled">
+                  <span class="slider"></span>
+                </label>
+                <span class="form-label" style="margin: 0;">KÍCH HOẠT XOAY TRẠNG THÁI</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">ROTATION MODE:</label>
+              <select id="dyn-status-mode" class="form-select">
+                <option value="sequential">SEQUENTIAL (Lần lượt từ trên xuống)</option>
+                <option value="random">RANDOM (Ngẫu nhiên)</option>
+              </select>
+            </div>
+
+            <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="form-label" style="margin: 0; font-weight: 600;">DANH SÁCH TRẠNG THÁI:</span>
+                <button onclick="addDynStep()" class="btn-secondary" style="padding: 6px 12px; font-size: 11px;">+ THÊM DÒNG</button>
+              </div>
+
+              <div id="dyn-steps-container">
+                
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+              <button onclick="saveDynamicStatus()" class="btn-primary">LƯU CẤU HÌNH DYNAMIC STATUS</button>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="tab-content" id="tab-afk" style="display: none;">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">AFK AUTO-RESPONDER & LOGS</div>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <label class="switch">
+                  <input type="checkbox" id="afk-enabled">
+                  <span class="slider"></span>
+                </label>
+                <span class="form-label" style="margin: 0;">KÍCH HOẠT AFK AUTO REPLY</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">NỘI DUNG TIN NHẮN TỰ ĐỘNG TRẢ LỜI:</label>
+              <textarea id="afk-message" class="form-textarea" rows="3" placeholder="Nhập tin nhắn tự động phản hồi khi có người đề cập (tag)..."></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end;">
+              <button onclick="saveAFK()" class="btn-primary">LƯU NỘI DUNG AFK</button>
+            </div>
+
+            <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="form-label" style="margin: 0; font-weight: 600;">NHẬT KÝ MENTION LOGS:</span>
+                <button onclick="clearAfkLogs()" class="btn-danger">XÓA NHẬT KÝ</button>
+              </div>
+
+              <div class="table-container">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>NGƯỜI NHẮN</th>
+                      <th>MÁY CHỦ</th>
+                      <th>KÊNH</th>
+                      <th>NỘI DUNG</th>
+                      <th>THỜI GIAN</th>
+                    </tr>
+                  </thead>
+                  <tbody id="afk-logs-tbody">
+                    
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="tab-content" id="tab-voice" style="display: none;">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">VOICE CHANNEL HOLDER</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">CHỌN MÁY CHỦ DISCORD:</label>
+              <select id="voice-guild-select" class="form-select" onchange="loadVoiceChannels(this.value)">
+                <option value="">-- CHỌN MÁY CHỦ --</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">CHỌN KÊNH THOẠI (VOICE CHANNEL):</label>
+              <select id="voice-channel-select" class="form-select">
+                <option value="">-- CHỌN KÊNH THOẠI --</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <h4>SELF MUTE (TẮT MICRO)</h4>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="voice-mute" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <h4>SELF DEAFEN (TẮT TAI NGHE)</h4>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="voice-deaf" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; justify-content: space-between; align-items: center; margin-top: 16px;">
+              <span style="font-size: 11px; color: var(--text-dim);">LƯU Ý: VUI LÒNG TẮT 2FA TRÊN TÀI KHOẢN KHI TREO VOICE 24/7.</span>
+              <div style="display: flex; gap: 12px;">
+                <button onclick="leaveVoice()" class="btn-secondary">RỜI KÊNH THOẠI</button>
+                <button onclick="joinVoice()" class="btn-primary">THAM GIA KÊNH THOẠI</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="tab-content" id="tab-hypesquad" style="display: none;">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">HYPESQUAD BADGE AUTOMATOR</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">CHỌN NHÀ (HOUSE BADGE):</label>
+              <select id="hypesquad-house-select" class="form-select">
+                <option value="disabled">TẮT (KHÔNG ĐỔI)</option>
+                <option value="1">HOUSE OF BRAVERY (DŨNG CẢM - TÍM)</option>
+                <option value="2">HOUSE OF BRILLIANCE (SÁNG TẠO - CAM)</option>
+                <option value="3">HOUSE OF BALANCE (CÂN BẰNG - XANH)</option>
+                <option value="random">XOAY VÒNG NGẪU NHIÊN BẢNG BADGE</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">THỜI GIAN XOAY VÒNG HYPESQUAD (PHÚT):</label>
+              <input type="number" id="hypesquad-interval-input" value="60" min="1" class="form-input" placeholder="Nhập số phút xoay vòng (VD: 60)">
+            </div>
+
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 16px;">
+              <button onclick="changeHypeSquadNow()" class="btn-primary">⚡ CẬP NHẬT BADGE HYPESQUAD NGAY</button>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="tab-content" id="tab-quests" style="display: none;">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">DISCORD QUESTS AUTO-COMPLETER</div>
+            </div>
+
+            
+            <div class="form-group" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+              <h4 style="margin: 0 0 12px 0; color: #fff; font-size: 14px; font-weight: 600;">🤖 BỘ ĐIỀU KHIỂN QUEST QUA DISCORD BOT</h4>
+              <p style="margin: 0 0 16px 0; font-size: 12px; color: #a0aec0; line-height: 1.5;">
+                Hệ thống hỗ trợ gửi bảng điều khiển tương tác (nút bấm) qua tin nhắn riêng (DM) từ Bot đến tài khoản của bạn để Khởi chạy, Tạm dừng hoặc Check list nhiệm vụ.
+              </p>
+              
+              <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; align-items: center;">
+                <div>
+                  <span class="form-label" style="display: inline; margin-right: 6px;">Phiên làm việc:</span>
+                  <span id="quest-session-status" style="font-weight: bold; color: #FFA500;">Chưa xác định</span>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 10px;">
+                <button onclick="connectQuestBot()" class="btn-primary" style="flex: 1; padding: 10px 16px; font-weight: 600;">🔌 KẾT NỐI BOT (GỬI DM ĐIỀU KHIỂN)</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">TẦN SUẤT TỰ ĐỘNG QUÉT QUEST MỚI (GIỜ):</label>
+              <input type="number" id="quests-interval-input" value="6" min="1" class="form-input" placeholder="Nhập số giờ (VD: 6)" onchange="saveQuestSettings()">
+            </div>
+
+            <div style="display: flex; gap: 12px; justify-content: space-between; align-items: center; margin-top: 16px;">
+              <span class="form-label" style="margin: 0; font-weight: 600;">NHẬT KÝ TIẾN ĐỘ QUESTS (REALTIME LOGS):</span>
+              <div style="display: flex; gap: 8px;">
+                <button onclick="runQuestsNow()" class="btn-primary" style="padding: 6px 14px; font-size: 11px;">🚀 KHỞI CHẠY</button>
+                <button onclick="pauseQuestsNow()" class="btn-danger" style="padding: 6px 14px; font-size: 11px;">⏸️ TẠM DỪNG</button>
+              </div>
+            </div>
+
+            <div class="quest-log-box" id="quest-log-box" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); padding: 12px; font-family: var(--font-mono); font-size: 12px; max-height: 250px; overflow-y: auto; color: #a0aec0; margin-top: 10px; line-height: 1.6;">
+              <div>[Hệ thống] Sẵn sàng quét Discord Quests...</div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="tab-content" id="tab-theme" style="display: none;">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">TÙY CHỈNH THEME & HÌNH NỀN (CUSTOM BACKGROUND)</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">TẢI LÊN HÌNH NỀN TÙY CHỈNH (HÌNH ẢNH / VIDEO):</label>
+              <div style="display: flex; gap: 12px; align-items: center; margin-top: 8px; flex-wrap: wrap;">
+                <input type="file" id="theme-file-input" accept="image/png, image/jpeg, image/jpg, image/gif, video/mp4, video/webm, video/ogg" style="display: none;" onchange="handleThemeImageUpload(event)">
+                <button onclick="document.getElementById('theme-file-input').click()" class="btn-primary">🎬 CHỌN HÌNH NỀN/VIDEO THEME</button>
+                <button id="btn-delete-theme" onclick="resetDefaultTheme()" class="btn-secondary" style="display: none; background: rgba(244, 63, 94, 0.15); border-color: rgba(244, 63, 94, 0.4); color: #f87171;">🗑️ XÓA HÌNH NỀN HIỆN TẠI</button>
+              </div>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 10px; line-height: 1.5;">
+                * HỖ TRỢ ĐỊNH DẠNG HÌNH ẢNH (PNG, JPG, JPEG, GIF) HOẶC VIDEO (MP4, WEBM, OGG).<br>
+                * HÌNH NỀN/VIDEO SẼ TỰ ĐỘNG CĂN GIỮA (CENTER-FIT COVER) LÀM NỀN TOÀN DIỆN CHO PANEL.<br>
+                * NẾU XÓA HÌNH NỀN ĐÃ TẢI LÊN, PANEL SẼ TỰ ĐỘNG QUAY VỀ THEME NEON MẶC ĐỊNH.
+              </p>
+            </div>
+
+            <div class="form-group" style="margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <label class="form-label" style="margin-bottom: 4px; font-weight: 600;">HIỆU ỨNG MẠNG LƯỚI NEURON (NEON PARTICLES):</label>
+                  <p style="font-size: 12px; color: var(--text-muted);">Bật / Tắt hiệu ứng hạt mạng lưới neuron chuyển động ở phông nền.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="neon-particles-toggle" checked onchange="toggleNeonParticles(this.checked)">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      
+      <div class="workspace-sidebar">
+        <div class="panel" style="position: sticky; top: 24px;">
+          <div class="panel-header">
+            <div class="panel-title">DISCORD CARD PREVIEW</div>
+            <span style="font-family: var(--font-mono); font-size: 10px; color: var(--accent-signal); text-transform: uppercase;">LIVE</span>
+          </div>
+
+          
+          <div class="discord-card">
+            <div class="discord-banner"></div>
+            <div class="discord-body">
+              <div class="discord-avatar-wrapper">
+                <img id="card-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" class="discord-avatar-img">
+                <div id="card-status-dot" class="discord-status-dot online"></div>
+              </div>
+
+              <div class="discord-user-info">
+                <div id="card-username" class="discord-name">Livecord User</div>
+                <div id="card-tag" class="discord-tag">User#0000</div>
+                <div id="card-custom-status" class="discord-custom-status" style="display: none;"></div>
+              </div>
+
+              
+              <div id="card-activity-box" class="discord-activity-box">
+                <div id="card-act-header" class="activity-header">PLAYING A GAME</div>
+                
+                <div class="activity-content">
+                  <div class="activity-img-wrapper">
+                    <img id="card-act-large-img" src="https://cdn.discordapp.com/embed/avatars/0.png" class="discord-avatar-img">
+                    <img id="card-act-small-img" src="https://cdn.discordapp.com/embed/avatars/1.png" class="activity-small-img" style="display: none;">
+                  </div>
+
+                  <div class="activity-details">
+                    <div id="card-act-name" class="activity-name">Livecord V3 Engine</div>
+                    <div id="card-act-details" class="activity-text">Developing AI Agents</div>
+                    <div id="card-act-state" class="activity-text">Solo Queue Ranked</div>
+                  </div>
+                </div>
+
+                <div id="card-act-buttons" class="activity-buttons">
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 8px;">
+            Mô phỏng hiển thị thời gian thực
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    </div> 
+
+  </div>
+
+  
+  <div id="create-account-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">THÊM TÀI KHOẢN MỚI</h3>
+        <button class="modal-close" onclick="closeCreateAccountModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">DISCORD USER TOKEN:</label>
+          <input type="password" id="new-acc-token" class="form-input" placeholder="Dán Token tài khoản Discord tại đây...">
+          <p style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">* Token sẽ được kiểm tra tính hợp lệ trước khi tạo tài khoản.</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">MẬT KHẨU KHÓA CONFIG:</label>
+          <input type="password" id="new-acc-password" class="form-input" placeholder="Nhập mật khẩu bảo vệ tài khoản này...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">XÁC NHẬN MẬT KHẨU:</label>
+          <input type="password" id="new-acc-confirm-password" class="form-input" placeholder="Xác nhận lại mật khẩu...">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeCreateAccountModal()">HỦY</button>
+        <button class="btn-primary" onclick="submitCreateAccount()">TẠO TÀI KHOẢN</button>
+      </div>
+    </div>
+  </div>
+
+  
+  <div id="delete-account-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: #f87171;">XÓA TÀI KHOẢN</h3>
+        <button class="modal-close" onclick="closeDeleteAccountModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: 12px; font-size: 13px;" id="delete-modal-msg">Xác nhận xóa tài khoản. Vui lòng nhập mật khẩu tài khoản để tiếp tục:</p>
+        <div class="form-group">
+          <label class="form-label">MẬT KHẨU XÁC NHẬN:</label>
+          <input type="password" id="delete-acc-password" class="form-input" placeholder="Nhập mật khẩu tài khoản...">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeDeleteAccountModal()">HỦY</button>
+        <button class="btn-danger" id="btn-confirm-delete" onclick="submitDeleteAccount()" style="background: rgba(244, 63, 94, 0.2); border-color: #f43f5e; color: #fda4af;">XÓA TÀI KHOẢN</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
